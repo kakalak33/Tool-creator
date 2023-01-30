@@ -1,0 +1,13 @@
+{
+  "ver": "1.1.40",
+  "importer": "prefab",
+  "imported": true,
+  "uuid": "ed49b30c-72fb-4e87-8a74-64465cbdfba2",
+  "files": [
+    ".json"
+  ],
+  "subMetas": {},
+  "userData": {
+    "syncNodeName": "DemoPrefab"
+  }
+}
