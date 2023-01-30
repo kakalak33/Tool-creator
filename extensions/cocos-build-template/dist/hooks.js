@@ -35,7 +35,6 @@ const onBeforeBuild = function (options, result) {
         const targetUuid = Editor.Utils.UUID.compressUUID(targetComponent, null);
         const { dirname } = Editor.Utils.Path;
         if (localize) {
-            // const allAssets = await Editor.Message.request('asset-db', 'query-assets', { type: 'scene' });
             let allTasks = [];
             let allRootDirs = [];
             log('=== Checking all Scenes ===');
@@ -73,12 +72,16 @@ const onBeforeBuild = function (options, result) {
                     .catch(err => log(err));
                 prefabQuerys.push(prefabQuery);
             });
-            Promise.all(prefabQuerys).then(() => {
+            Promise.all(prefabQuerys)
+                .then(() => {
                 log(`=== Build Extension with ${allTasks.length} tasks ===`);
-                Promise.all(allTasks).then(results => {
+                Promise.all(allTasks)
+                    .then(results => {
                     log('=== Finish build extension process ===');
-                });
-            });
+                })
+                    .catch(err => log(err));
+            })
+                .catch(err => log(err));
         }
         ;
     });

@@ -24,7 +24,6 @@ export const onBeforeBuild: BuildHook.onBeforeBuild = async function (options: a
     const { dirname } = Editor.Utils.Path;
 
     if (localize) {
-        // const allAssets = await Editor.Message.request('asset-db', 'query-assets', { type: 'scene' });
         let allTasks = [];
         let allRootDirs = [];
         log('=== Checking all Scenes ===');
@@ -63,12 +62,16 @@ export const onBeforeBuild: BuildHook.onBeforeBuild = async function (options: a
             prefabQuerys.push(prefabQuery);
         });
 
-        Promise.all(prefabQuerys).then(() => {
-            log(`=== Build Extension with ${allTasks.length} tasks ===`)
-            Promise.all(allTasks).then(results => {
-                log('=== Finish build extension process ===');
+        Promise.all(prefabQuerys)
+            .then(() => {
+                log(`=== Build Extension with ${allTasks.length} tasks ===`)
+                Promise.all(allTasks)
+                    .then(results => {
+                        log('=== Finish build extension process ===');
+                    })
+                    .catch(err => log(err));
             })
-        })
+            .catch(err => log(err));
 
     };
 };
