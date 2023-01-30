@@ -43,9 +43,9 @@ export const onBeforeBuild: BuildHook.onBeforeBuild = async function (options: a
             allTasks.push(task);
         })
         log('=== Checking all Prefabs ===');
-        let prefabTasks = [];
+        let prefabQuerys = [];
         allRootDirs.forEach(rootDir => {
-            const prefabTask = Editor.Message.request('asset-db', 'query-assets', { ccType: 'cc.Prefab', pattern: `${rootDir}/**\/*` })
+            const prefabQuery = Editor.Message.request('asset-db', 'query-assets', { ccType: 'cc.Prefab', pattern: `${rootDir}/**\/*` })
                 .then(prefabs => {
                     prefabs.forEach(prefab => {
                         log('=== Reading prefab ', prefab.url, ' ===');
@@ -60,10 +60,10 @@ export const onBeforeBuild: BuildHook.onBeforeBuild = async function (options: a
                     })
                 })
                 .catch(err => log(err));
-            prefabTasks.push(prefabTask);
+            prefabQuerys.push(prefabQuery);
         });
-        
-        Promise.all(prefabTasks).then(() => {
+
+        Promise.all(prefabQuerys).then(() => {
             log(`=== Build Extension with ${allTasks.length} tasks ===`)
             Promise.all(allTasks).then(results => {
                 log('=== Finish build extension process ===');
