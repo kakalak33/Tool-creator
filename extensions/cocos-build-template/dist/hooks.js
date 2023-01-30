@@ -40,7 +40,7 @@ const onBeforeBuild = function (options, result) {
             let allRootDirs = [];
             log('=== Checking all Scenes ===');
             scenes.forEach(scene => {
-                log('Reading scene ', scene.url);
+                log('=== Reading scene ', scene.url, ' ===');
                 const rootDir = dirname(scene.url);
                 if (!allRootDirs.includes(rootDir))
                     allRootDirs.push(rootDir);
@@ -54,10 +54,12 @@ const onBeforeBuild = function (options, result) {
                 allTasks.push(task);
             });
             log('=== Checking all Prefabs ===');
+            let prefabTasks = [];
             allRootDirs.forEach(rootDir => {
-                Editor.Message.request('asset-db', 'query-assets', { ccType: 'cc.Prefab', pattern: `${rootDir}/**\/*` })
+                const prefabTask = Editor.Message.request('asset-db', 'query-assets', { ccType: 'cc.Prefab', pattern: `${rootDir}/**\/*` })
                     .then(prefabs => {
                     prefabs.forEach(prefab => {
+                        log('=== Reading prefab ', prefab.url, ' ===');
                         const task = Editor.Message.request('asset-db', 'query-path', prefab.uuid)
                             .then(path => {
                             removeComponent(path, targetUuid);
@@ -67,12 +69,18 @@ const onBeforeBuild = function (options, result) {
                             .catch(err => log(err));
                         allTasks.push(task);
                     });
+                })
+                    .catch(err => log(err));
+                prefabTasks.push(prefabTask);
+            });
+            Promise.all(prefabTasks).then(() => {
+                log(`=== Build Extension with ${allTasks.length} tasks ===`);
+                Promise.all(allTasks).then(results => {
+                    log('=== Finish build extension process ===');
                 });
             });
-            Promise.all(allTasks).then(results => {
-                log('=== Finish build extension process ===');
-            });
         }
+        ;
     });
 };
 exports.onBeforeBuild = onBeforeBuild;
